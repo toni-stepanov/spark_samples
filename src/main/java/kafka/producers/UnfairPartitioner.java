@@ -1,4 +1,4 @@
-package producers;
+package kafka.producers;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;
@@ -6,6 +6,7 @@ import org.apache.kafka.common.Cluster;
 import java.util.Map;
 
 public class UnfairPartitioner implements Partitioner {
+
     @Override
     public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
         if (topic.equals("messages")) {
@@ -25,4 +26,5 @@ public class UnfairPartitioner implements Partitioner {
     @Override
     public void configure(Map<String, ?> configs) {
     }
+
 }

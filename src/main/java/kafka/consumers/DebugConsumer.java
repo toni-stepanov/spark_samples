@@ -1,4 +1,4 @@
-package consumers;
+package kafka.consumers;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -7,21 +7,30 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.Properties;
 
-public class Consumer {
+public class DebugConsumer implements Consumer {
 
-    private final static Logger logger = Logger.getLogger(Consumer.class);
+    private final static Logger logger = Logger.getLogger(DebugConsumer.class);
 
-    public static void main(String[] args) {
-        Consumer consumer1 = new Consumer();
-        KafkaConsumer<String, String> consumer = consumer1.get();
+    @SuppressWarnings("InfiniteLoopStatement")
+    public void run(KafkaConsumer<String, String> kafkaConsumer) {
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(100);
-            records.forEach(e ->
-                    logger.info("Offset " + e.offset() + " key= " + e.key() + " value= " + e.value()));
+            print(records(kafkaConsumer));
         }
     }
 
-    private KafkaConsumer<String, String> get() {
+    @Override
+    public ConsumerRecords<String, String> records(KafkaConsumer<String, String> kafkaConsumer) {
+        return kafkaConsumer.poll(100);
+    }
+
+    @Override
+    public void print(ConsumerRecords<String, String> records) {
+        records.forEach(e ->
+                logger.info("Offset " + e.offset() + " key= " + e.key() + " value= " + e.value()));
+    }
+
+    @Override
+    public KafkaConsumer<String, String> get() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
         props.put("session.timeout", 10000);
